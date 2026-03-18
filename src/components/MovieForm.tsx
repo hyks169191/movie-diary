@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Movie } from "@/types/movie";
-import { addMovie } from "@/lib/storage";
+import { addMovie, updateMovie } from "@/lib/storage";
 import StarRating from "./StarRating";
 import FaceRating from "./FaceRating";
 import GenreSelect from "./GenreSelect";
@@ -33,9 +33,19 @@ const initialForm: FormData = {
   posterUrl: "",
 };
 
-export default function MovieForm() {
+type Props = {
+  movie?: Movie;
+};
+
+export default function MovieForm({ movie }: Props) {
   const router = useRouter();
-  const [form, setForm] = useState<FormData>(initialForm);
+  const [form, setForm] = useState<FormData>(() => {
+    if (movie) {
+      const { id, createdAt, ...rest } = movie;
+      return { ...rest, watchedAt: movie.watchedAt.slice(0, 10) };
+    }
+    return initialForm;
+  });
 
   const set = <K extends keyof FormData>(key: K, value: FormData[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -43,7 +53,12 @@ export default function MovieForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) return;
-    addMovie({ ...form, watchedAt: new Date(form.watchedAt).toISOString() });
+    const data = { ...form, watchedAt: new Date(form.watchedAt).toISOString() };
+    if (movie) {
+      updateMovie(movie.id, data);
+    } else {
+      addMovie(data);
+    }
     router.push("/");
   };
 
@@ -209,7 +224,7 @@ export default function MovieForm() {
         type="submit"
         className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors cursor-pointer"
       >
-        保存する
+        {movie ? "更新する" : "保存する"}
       </button>
     </form>
   );

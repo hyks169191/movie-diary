@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Movie } from "@/types/movie";
 
 const faceEmojis: Record<number, string> = {
@@ -76,12 +77,20 @@ export default function MovieCard({ movie, onDelete }: Props) {
           </div>
         )}
 
-        <button
-          onClick={() => onDelete(movie.id)}
-          className="text-xs text-red-400 hover:text-red-600 cursor-pointer mt-2"
-        >
-          削除
-        </button>
+        <div className="flex gap-3 mt-2">
+          <Link
+            href={`/edit/${movie.id}`}
+            className="text-xs text-blue-500 hover:text-blue-700"
+          >
+            編集
+          </Link>
+          <button
+            onClick={() => onDelete(movie.id)}
+            className="text-xs text-red-400 hover:text-red-600 cursor-pointer"
+          >
+            削除
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -9,6 +9,10 @@ export function getMovies(): Movie[] {
   return JSON.parse(data) as Movie[];
 }
 
+export function getMovie(id: string): Movie | null {
+  return getMovies().find((m) => m.id === id) ?? null;
+}
+
 export function addMovie(movie: Omit<Movie, "id" | "createdAt">): Movie {
   const movies = getMovies();
   const newMovie: Movie = {
